@@ -16,6 +16,16 @@ body {
   --color-secondary: #000000;
 }
 
+.theme-green {
+  --color-primary: #004006;
+  --color-secondary: #69ed76;
+}
+
+.theme-red {
+  --color-primary: #5a0000;
+  --color-secondary: #ff0000;
+}
+
 @font-face {
   font-family: 'Simma-Lugnt-Sans-Regular';
   src: url('./fonts/Simma\ Lugnt\ Sans-Regular.otf') format('opentype');
