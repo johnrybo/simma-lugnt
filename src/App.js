@@ -7,36 +7,36 @@ const App = () => {
   const [error, setError] = useState(false);
 
   const postData = async () => {
-    setEmailStatus('loading');
-
-    if (validator.isEmail(email)) {
-      const response = await fetch(
-        'https://simmalugnt.free.beeceptor.com/login',
-        {
-          method: 'POST',
-          body: JSON.stringify({ email: email }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      if (!response.ok) {
-        setError(true);
-        const message = `An error has occured: ${response.status}`;
-        throw new Error(message);
+    const response = await fetch(
+      'https://simmalugnt.free.beeceptor.com/login',
+      {
+        method: 'POST',
+        body: JSON.stringify({ email: email }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       }
+    );
 
-      setEmailStatus('valid');
-      const result = await response.json();
-      return result;
+    if (!response.ok) {
+      setError(true);
+      const message = `An error has occured: ${response.status}`;
+      throw new Error(message);
     }
-    setEmailStatus('invalid');
+
+    const result = await response.json();
+    return result;
   };
 
-  const validateEmail = (e) => {
+  const validateEmail = async (e) => {
     e.preventDefault();
-    postData();
+    setEmailStatus('loading');
+    if (validator.isEmail(email)) {
+      await postData();
+      setEmailStatus('valid');
+    } else {
+      setEmailStatus('invalid');
+    }
   };
 
   const handleEmailChange = (input) => {
