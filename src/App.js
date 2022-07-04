@@ -4,31 +4,52 @@ import validator from 'validator';
 const App = () => {
   const [email, setEmail] = useState('');
   const [emailStatus, setEmailStatus] = useState('initial');
+  const [error, setError] = useState(false);
+
+  const postData = async () => {
+    setEmailStatus('loading');
+
+    if (validator.isEmail(email)) {
+      const response = await fetch(
+        'https://simmalugnt.free.beeceptor.com/login',
+        {
+          method: 'POST',
+          body: JSON.stringify({ email: email }),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (!response.ok) {
+        setError(true);
+        const message = `An error has occured: ${response.status}`;
+        throw new Error(message);
+      }
+
+      setEmailStatus('valid');
+      const result = await response.json();
+      return result;
+    }
+    setEmailStatus('invalid');
+  };
 
   const validateEmail = (e) => {
     e.preventDefault();
-
-    setEmailStatus('loading');
-    if (validator.isEmail(email)) {
-      setTimeout(() => {
-        setEmailStatus('valid');
-      }, 2000);
-    } else {
-      setEmailStatus('invalid');
-    }
+    postData();
   };
 
-  const handleEmailChange = (newEmail) => {
-    setEmail(newEmail);
+  const handleEmailChange = (input) => {
+    setEmail(input);
 
-    if (newEmail !== email) {
+    if (input !== email) {
       setEmailStatus('initial');
     }
   };
 
   return (
     <div
-      className={`flex items-end justify-center w-full min-h-screen bg-wave bg-cover bg-center ${
+      className={`flex flex-col justify-end items-center fixed w-full h-full bg-wave bg-cover bg-center ${
         emailStatus === 'valid'
           ? 'theme-green'
           : emailStatus === 'invalid'
@@ -36,7 +57,11 @@ const App = () => {
           : 'theme-white'
       }`}
     >
-      {' '}
+      {error && (
+        <span className='text-[#FF0000] text-sm text-center w-[342px]'>
+          An error has occured, please refresh the page and try again.
+        </span>
+      )}
       <div className='w-[342px] max-w-full m-6 px-6 py-[72px] rounded-boxRadius bg-primary'>
         <h1 className='text-lg text-secondary font-bold leading-[48px] tracking-tight'>
           Sign up to our newsletter
